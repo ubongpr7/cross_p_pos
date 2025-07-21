@@ -57,7 +57,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.0-beta03")
             implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1")
-            implementation("br.com.devsrsouza.compose.icons:eva-icons:1.1.1")
+            implementation("br.com.devsrsouza.compose.icons:tabler-icons:1.1.1")
         }
 
         commonTest.dependencies {
