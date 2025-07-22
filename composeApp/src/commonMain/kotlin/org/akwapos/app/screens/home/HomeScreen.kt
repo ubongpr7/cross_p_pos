@@ -1,8 +1,5 @@
 package org.akwapos.app.screens.home
 
-import akwapos.composeapp.generated.resources.Res
-import akwapos.composeapp.generated.resources.ic_dark_mode
-import akwapos.composeapp.generated.resources.ic_light_mode
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -29,17 +26,12 @@ import org.akwapos.app.screens.dashboard.DashboardScreen
 import org.akwapos.app.screens.pointofsale.PointOfSaleScreen
 import org.akwapos.app.theme.*
 import org.akwapos.app.utils.toPercentage
-import org.jetbrains.compose.resources.vectorResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     var isDark by LocalThemeIsDark.current
-    val icon = remember(isDark) {
-        if (isDark) Res.drawable.ic_light_mode
-        else Res.drawable.ic_dark_mode
-    }
     var isSideBarOpen by remember { mutableStateOf(false) }
     val platformOrientation = rememberPlatformOrientation()
     val (platformWidth, platformHeight) = remember(platformOrientation) {
@@ -57,10 +49,10 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         drawerContent = {
             when (platformOrientation) {
                 is PlatformOrientation.Portrait -> {
+                    scope.launch { drawerState.close() }
                     ModalDrawerSheet(
                         modifier = Modifier.width(platformOrientation.width.toPercentage(70).dp)
                     ) {
-                        scope.launch { drawerState.close() }
                         Box(
                             Modifier.fillMaxWidth()
                                 .height(platformOrientation.height.toPercentage(20).dp)
@@ -138,8 +130,8 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                         IconButton(onClick = {}) {
                             Icon(TablerIcons.Bell, "notification icon")
                         }
-                        IconButton(onClick = {}) {
-                            Icon(vectorResource(icon), "notification icon")
+                        IconButton(onClick = {isDark = !isDark}) {
+                            Icon(if (isDark)TablerIcons.Moon else TablerIcons.Sun, "theme icon")
                         }
                         IconButton(onClick = {}) {
                             Icon(TablerIcons.User, "notification icon")

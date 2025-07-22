@@ -1,5 +1,7 @@
 package org.akwapos.app.theme
 
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -11,18 +13,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.*
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import kotlinx.coroutines.launch
 import org.akwapos.app.models.ComposeTextModel
 import org.akwapos.app.platform.PlatformOrientation
@@ -205,3 +208,24 @@ fun Modifier.jVerticalScroll(): Modifier {
         )
 }
 
+@Composable
+fun Modifier.createShimmer(colors: List<Color>, duration: Int = 1000): Modifier = composed {
+    var size by remember { mutableStateOf(IntSize.Zero) }
+    val transition = rememberInfiniteTransition()
+    val startOffset by transition.animateFloat(
+        initialValue = -2 * size.width.toFloat(),
+        targetValue = 2 * size.width.toFloat(),
+        animationSpec = infiniteRepeatable(
+            animation = tween(duration),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    background(
+        brush = Brush.linearGradient(
+            colors = colors,
+            start = Offset(startOffset, 0f),
+            end = Offset(startOffset + size.width, size.height.toFloat())
+        )
+    )
+        .onGloballyPositioned { size = it.size }
+}
