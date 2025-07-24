@@ -11,3 +11,6 @@ object DashboardScreenType
 
 @Serializable
 object PointOfSaleScreenType
+
+@Serializable
+object ProductsScreenType

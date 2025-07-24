@@ -56,7 +56,8 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
                             ComposeTextModel(
                                 text = "12.5% ",
                                 textStyle = MaterialTheme.typography.labelSmall.copy(color = Color.Green)
-                            ), ComposeTextModel("vs last week")
+                            ),
+                            ComposeTextModel("vs last week")
                         )
                     )
                 },
@@ -175,8 +176,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
                     )
                     .padding(PixelDensity.large * 2),
                 isPortrait = platformOrientation is PlatformOrientation.Portrait,
-                width = platformWidth,
-                height = platformHeight
+                width = platformWidth
             )
             TopSellingProducts(
                 modifier = Modifier
@@ -188,15 +188,14 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
                     )
                     .padding(PixelDensity.large * 2),
                 isPortrait = platformOrientation is PlatformOrientation.Portrait,
-                width = platformWidth,
-                height = platformHeight
+                width = platformWidth
             )
         }
     }
 }
 
 @Composable
-private fun TopSellingProducts(modifier: Modifier, isPortrait: Boolean, width: Int, height: Int) {
+private fun TopSellingProducts(modifier: Modifier, isPortrait: Boolean, width: Int) {
     Column(
         modifier,
         verticalArrangement = Arrangement.spacedBy(PixelDensity.medium)
@@ -257,7 +256,7 @@ private fun ProductItem(modifier: Modifier) {
 }
 
 @Composable
-private fun RecentTransaction(modifier: Modifier, isPortrait: Boolean, width: Int, height: Int) {
+private fun RecentTransaction(modifier: Modifier, isPortrait: Boolean, width: Int) {
     Column(
         modifier,
         verticalArrangement = Arrangement.spacedBy(PixelDensity.medium)
