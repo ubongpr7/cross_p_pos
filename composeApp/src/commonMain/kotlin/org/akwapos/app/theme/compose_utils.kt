@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.gestures.scrollBy
@@ -35,10 +34,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.*
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -73,6 +72,11 @@ fun Modifier.drawUnderLine(color: Color, thickness: Dp): Modifier = composed {
 fun HorizontalTextIcon(
     text: String,
     modifier: Modifier = Modifier,
+    vSpacing:Dp = PixelDensity.medium,
+    overflow: TextOverflow = TextOverflow.Clip,
+    maxLines: Int = Int.MAX_VALUE,
+    minLines: Int = 1,
+    hSpacing:Dp = PixelDensity.large,
     style: TextStyle = TextStyle.Default,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null
@@ -84,9 +88,12 @@ fun HorizontalTextIcon(
     ) {
         if (leadingIcon != null) leadingIcon()
         Text(
-            modifier = Modifier.padding(horizontal = PixelDensity.large, vertical = PixelDensity.medium),
+            modifier = Modifier.padding(horizontal = hSpacing, vertical = vSpacing),
             text = text,
-            style = style
+            style = style,
+            overflow = overflow,
+            maxLines = maxLines,
+            minLines = minLines,
         )
         if (trailingIcon != null) trailingIcon()
     }
@@ -224,28 +231,6 @@ fun Modifier.jVerticalScroll(): Modifier {
                 }
             }
         )
-}
-
-@Composable
-fun Modifier.jDragScroll2D(
-    xOffset: MutableState<Float>,
-    yOffset: MutableState<Float>
-): Modifier {
-    return this.pointerInput(Unit) {
-        awaitPointerEventScope {
-            while (true) {
-                val down = awaitPointerEvent().changes.firstOrNull() ?: continue
-                if (down.pressed) {
-                    val pointerId = down.id
-                    drag(pointerId) { change ->
-                        change.consume()
-                        xOffset.value += change.positionChange().x
-                        yOffset.value += change.positionChange().y
-                    }
-                }
-            }
-        }
-    }
 }
 
 @Composable

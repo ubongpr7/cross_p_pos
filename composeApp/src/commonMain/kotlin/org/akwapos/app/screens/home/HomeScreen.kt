@@ -22,9 +22,11 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.*
 import kotlinx.coroutines.launch
 import org.akwapos.app.platform.PlatformOrientation
+import org.akwapos.app.screens.CustomersScreenType
 import org.akwapos.app.screens.DashboardScreenType
 import org.akwapos.app.screens.PointOfSaleScreenType
 import org.akwapos.app.screens.ProductsScreenType
+import org.akwapos.app.screens.customers.CustomersScreen
 import org.akwapos.app.screens.dashboard.DashboardScreen
 import org.akwapos.app.screens.pointofsale.PointOfSaleScreen
 import org.akwapos.app.screens.products.ProductsScreen
@@ -173,6 +175,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     composable<DashboardScreenType> { DashboardScreen() }
                     composable<PointOfSaleScreenType> { PointOfSaleScreen() }
                     composable<ProductsScreenType> { ProductsScreen() }
+                    composable<CustomersScreenType> { CustomersScreen() }
                 }
             }
         }
@@ -203,6 +206,12 @@ private fun NavPageItems(
         NavPageItem<ProductsScreenType>(
             curRoute, navController,
             "Product", TablerIcons.Box,
+            modifier, showText
+        )
+        // Product
+        NavPageItem<CustomersScreenType>(
+            curRoute, navController,
+            "Customers", TablerIcons.Users,
             modifier, showText
         )
     }

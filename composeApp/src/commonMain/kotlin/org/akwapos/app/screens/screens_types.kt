@@ -14,3 +14,6 @@ object PointOfSaleScreenType
 
 @Serializable
 object ProductsScreenType
+
+@Serializable
+object CustomersScreenType
