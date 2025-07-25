@@ -26,10 +26,12 @@ import org.akwapos.app.screens.CustomersScreenType
 import org.akwapos.app.screens.DashboardScreenType
 import org.akwapos.app.screens.PointOfSaleScreenType
 import org.akwapos.app.screens.ProductsScreenType
+import org.akwapos.app.screens.TransactionsScreenType
 import org.akwapos.app.screens.customers.CustomersScreen
 import org.akwapos.app.screens.dashboard.DashboardScreen
 import org.akwapos.app.screens.pointofsale.PointOfSaleScreen
 import org.akwapos.app.screens.products.ProductsScreen
+import org.akwapos.app.screens.transactions.TransactionsScreen
 import org.akwapos.app.theme.*
 import org.akwapos.app.utils.toPercentage
 
@@ -176,6 +178,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     composable<PointOfSaleScreenType> { PointOfSaleScreen() }
                     composable<ProductsScreenType> { ProductsScreen() }
                     composable<CustomersScreenType> { CustomersScreen() }
+                    composable<TransactionsScreenType> { TransactionsScreen() }
                 }
             }
         }
@@ -212,6 +215,12 @@ private fun NavPageItems(
         NavPageItem<CustomersScreenType>(
             curRoute, navController,
             "Customers", TablerIcons.Users,
+            modifier, showText
+        )
+        // Transactions
+        NavPageItem<TransactionsScreenType>(
+            curRoute, navController,
+            "Transactions", TablerIcons.CreditCard,
             modifier, showText
         )
     }

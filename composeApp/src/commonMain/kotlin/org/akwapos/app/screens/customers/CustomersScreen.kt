@@ -26,7 +26,7 @@ import org.akwapos.app.theme.*
 fun CustomersScreen(modifier: Modifier = Modifier) {
     val platformOrientation = rememberPlatformOrientation()
     val screenModel = viewModel { CustomersScreenModel() }
-    val (platformWidth, platformHeight) = remember(platformOrientation) {
+    val (platformWidth, _) = remember(platformOrientation) {
         when (platformOrientation) {
             is PlatformOrientation.LandScape -> platformOrientation.width to platformOrientation.height
             is PlatformOrientation.Portrait -> platformOrientation.width to platformOrientation.height
@@ -118,7 +118,7 @@ private fun DisplayCustomersFilterMobile(screenModel: CustomersScreenModel) {
                 ),
             onClick = { }) {
             Icon(TablerIcons.Filter, "filter icon")
-            Text("Filter", style = MaterialTheme.typography.bodyLarge)
+            Text("Filters", style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
@@ -234,16 +234,12 @@ private fun DisplayCustomerMobile(modifier: Modifier = Modifier) {
                         textAlign = TextAlign.Center
                     )
                 )
-                Row {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            TablerIcons.Edit,
-                            "edit icon",
-                            tint = MaterialTheme.colorScheme.inversePrimary
-                        )
-                    }
-                    Spacer(Modifier.width(PixelDensity.small))
-                    IconButton(onClick = {}) { Icon(TablerIcons.Trash, "delete icon", tint = Color.Red) }
+                IconButton(onClick = {}) {
+                    Icon(
+                        TablerIcons.Edit,
+                        "edit icon",
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
                 }
             }
             Row(
@@ -373,7 +369,7 @@ private fun DisplayCustomerFilter(screenModel: CustomersScreenModel) {
                 ),
             onClick = { }) {
             Icon(TablerIcons.Filter, "filter icon")
-            Text("Filter", style = MaterialTheme.typography.bodyLarge)
+            Text("Filters", style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
@@ -535,19 +531,17 @@ private fun ColumnScope.DisplayCustomers(
                             textAlign = TextAlign.Center
                         )
                     )
-                    Row(
+                    Box(
                         modifier = Modifier.width(PixelDensity.setValue(width)),
-                        horizontalArrangement = Arrangement.Center
+                        contentAlignment = Alignment.Center
                     ) {
                         IconButton(onClick = {}) {
                             Icon(
                                 TablerIcons.Edit,
                                 "edit icon",
-                                tint = MaterialTheme.colorScheme.inversePrimary
+                                tint = MaterialTheme.colorScheme.secondary
                             )
                         }
-                        Spacer(Modifier.width(PixelDensity.verySmall))
-                        IconButton(onClick = {}) { Icon(TablerIcons.Trash, "delete icon", tint = Color.Red) }
                     }
                 }
             }

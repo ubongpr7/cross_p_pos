@@ -217,7 +217,7 @@ private fun PortraitDisplay(modifier: Modifier) {
                     .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(5))
                     .padding(PixelDensity.medium), horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CurrentSale()
+                CurrentSale(screenModel)
                 DisplayCart()
                 CheckoutButtons()
             }
@@ -245,7 +245,7 @@ private fun LandScapeDisplay(modifier: Modifier, ) {
                 .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(5))
                 .padding(PixelDensity.medium), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CurrentSale()
+            CurrentSale(screenModel)
             DisplayCart()
             CheckoutButtons()
         }
@@ -253,7 +253,9 @@ private fun LandScapeDisplay(modifier: Modifier, ) {
 }
 
 @Composable
-private fun ColumnScope.CurrentSale() {
+private fun ColumnScope.CurrentSale(
+    screenModel: PointOfSaleScreenModel
+) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -281,7 +283,7 @@ private fun ColumnScope.CurrentSale() {
             text = "Walk-in",
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
             trailingIcon = {
-                TextButton(onClick = {}) {
+                TextButton(onClick = { screenModel.showCustomerPopup = !screenModel.showCustomerPopup }) {
                     Text(
                         modifier = Modifier.padding(start = PixelDensity.small),
                         text = "Change",
@@ -298,7 +300,7 @@ private fun ColumnScope.CurrentSale() {
             text = "No table",
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
             trailingIcon = {
-                TextButton(onClick = {}) {
+                TextButton(onClick = {screenModel.showTablePopup = !screenModel.showTablePopup}) {
                     Text(
                         modifier = Modifier.padding(start = PixelDensity.small),
                         text = "Change",

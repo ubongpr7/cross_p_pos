@@ -17,3 +17,6 @@ object ProductsScreenType
 
 @Serializable
 object CustomersScreenType
+
+@Serializable
+object TransactionsScreenType

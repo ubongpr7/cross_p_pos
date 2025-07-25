@@ -26,7 +26,7 @@ import org.akwapos.app.theme.*
 fun ProductsScreen(modifier: Modifier = Modifier) {
     val screenModel = viewModel { ProductsScreenModel() }
     val platformOrientation = rememberPlatformOrientation()
-    val (platformWidth, platformHeight) = remember(platformOrientation) {
+    val (platformWidth, _) = remember(platformOrientation) {
         when (platformOrientation) {
             is PlatformOrientation.LandScape -> platformOrientation.width to platformOrientation.height
             is PlatformOrientation.Portrait -> platformOrientation.width to platformOrientation.height
@@ -125,7 +125,10 @@ private fun DisplayProductsMobile(modifier: Modifier) {
                 "Showing 5 of 5 products",
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(PixelDensity.small), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(PixelDensity.small),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 IconButton(onClick = {}) {
                     Icon(TablerIcons.ChevronLeft, "previous")
                 }
@@ -156,11 +159,13 @@ private fun DisplayProductsMobile(modifier: Modifier) {
 private fun DisplayProductMobile(modifier: Modifier = Modifier) {
     Column(modifier) {
         val isExpand = remember { mutableStateOf(false) }
-        val bgColor = remember { listOf(
-            Color.Green.copy(alpha = 0.5f),
-            Color.Red.copy(alpha = 0.5f),
-            Color.Yellow.copy(alpha = 0.5f),
-        ).random() }
+        val bgColor = remember {
+            listOf(
+                Color.Green.copy(alpha = 0.5f),
+                Color.Red.copy(alpha = 0.5f),
+                Color.Yellow.copy(alpha = 0.5f),
+            ).random()
+        }
         Row(
             Modifier.fillMaxWidth()
                 .padding(vertical = PixelDensity.small),
@@ -181,18 +186,13 @@ private fun DisplayProductMobile(modifier: Modifier = Modifier) {
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center
                 )
-
             )
-            Row {
-                IconButton(onClick = {}) {
-                    Icon(
-                        TablerIcons.Edit,
-                        "edit icon",
-                        tint = MaterialTheme.colorScheme.inversePrimary
-                    )
-                }
-                Spacer(Modifier.width(PixelDensity.small))
-                IconButton(onClick = {}) { Icon(TablerIcons.Trash, "delete icon", tint = Color.Red) }
+            IconButton(onClick = {}) {
+                Icon(
+                    TablerIcons.Edit,
+                    "edit icon",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
             }
         }
 
@@ -277,7 +277,7 @@ private fun DisplayProductMobile(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun DisplayProductFilterMobile(screenModel: ProductsScreenModel) {
+private fun DisplayProductFilterMobile(screenModel: ProductsScreenModel) {
     FlowRow(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(PixelDensity.medium),
@@ -308,7 +308,7 @@ fun DisplayProductFilterMobile(screenModel: ProductsScreenModel) {
                 ),
             onClick = { }) {
             Icon(TablerIcons.Filter, "filter icon")
-            Text("Filter", style = MaterialTheme.typography.bodyLarge)
+            Text("Filters", style = MaterialTheme.typography.bodyLarge)
         }
         TextButton(
             modifier = Modifier
@@ -475,19 +475,17 @@ private fun ColumnScope.DisplayProducts(
                             textAlign = TextAlign.Center
                         )
                     )
-                    Row(
+                    Box(
                         modifier = Modifier.width(PixelDensity.setValue(width)),
-                        horizontalArrangement = Arrangement.Center
+                        contentAlignment = Alignment.Center
                     ) {
                         IconButton(onClick = {}) {
                             Icon(
                                 TablerIcons.Edit,
                                 "edit icon",
-                                tint = MaterialTheme.colorScheme.inversePrimary
+                                tint = MaterialTheme.colorScheme.secondary
                             )
                         }
-                        Spacer(Modifier.width(PixelDensity.large))
-                        IconButton(onClick = {}) { Icon(TablerIcons.Trash, "delete icon", tint = Color.Red) }
                     }
                 }
                 HorizontalDivider()
@@ -548,49 +546,6 @@ private fun ColumnScope.DisplayProducts(
 }
 
 @Composable
-fun ProductsBody(modifier: Modifier) {
-    repeat(10) {
-        Row(modifier, horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = "Product",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-            )
-            Text(
-                modifier = Modifier.weight(1f),
-                text = "SKU",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Normal)
-            )
-            Text(
-                modifier = Modifier.weight(1f),
-                text = "SKU",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Normal)
-            )
-            Text(
-                modifier = Modifier.weight(1f),
-                text = "SKU",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Normal)
-            )
-            Text(
-                modifier = Modifier.weight(1f),
-                text = "SKU",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Normal)
-            )
-            Text(
-                modifier = Modifier.weight(1f),
-                text = "SKU",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Normal)
-            )
-            Text(
-                modifier = Modifier.weight(1f),
-                text = "SKU",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Normal)
-            )
-        }
-    }
-}
-
-@Composable
 private fun DisplayProductFilter(screenModel: ProductsScreenModel) {
     Row(
         Modifier.fillMaxWidth(),
@@ -621,7 +576,7 @@ private fun DisplayProductFilter(screenModel: ProductsScreenModel) {
                 ),
             onClick = { }) {
             Icon(TablerIcons.Filter, "filter icon")
-            Text("Filter", style = MaterialTheme.typography.bodyLarge)
+            Text("Filters", style = MaterialTheme.typography.bodyLarge)
         }
         TextButton(
             modifier = Modifier
