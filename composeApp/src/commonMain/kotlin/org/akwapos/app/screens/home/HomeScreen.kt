@@ -9,8 +9,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,10 +22,16 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.*
 import kotlinx.coroutines.launch
 import org.akwapos.app.platform.PlatformOrientation
+import org.akwapos.app.screens.CustomersScreenType
 import org.akwapos.app.screens.DashboardScreenType
 import org.akwapos.app.screens.PointOfSaleScreenType
+import org.akwapos.app.screens.ProductsScreenType
+import org.akwapos.app.screens.TransactionsScreenType
+import org.akwapos.app.screens.customers.CustomersScreen
 import org.akwapos.app.screens.dashboard.DashboardScreen
 import org.akwapos.app.screens.pointofsale.PointOfSaleScreen
+import org.akwapos.app.screens.products.ProductsScreen
+import org.akwapos.app.screens.transactions.TransactionsScreen
 import org.akwapos.app.theme.*
 import org.akwapos.app.utils.toPercentage
 
@@ -34,7 +42,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
     var isDark by LocalThemeIsDark.current
     var isSideBarOpen by remember { mutableStateOf(false) }
     val platformOrientation = rememberPlatformOrientation()
-    val (platformWidth, platformHeight) = remember(platformOrientation) {
+    val (platformWidth, _) = remember(platformOrientation) {
         when (platformOrientation) {
             is PlatformOrientation.LandScape -> platformOrientation.width to platformOrientation.height
             is PlatformOrientation.Portrait -> platformOrientation.width to platformOrientation.height
@@ -130,8 +138,8 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                         IconButton(onClick = {}) {
                             Icon(TablerIcons.Bell, "notification icon")
                         }
-                        IconButton(onClick = {isDark = !isDark}) {
-                            Icon(if (isDark)TablerIcons.Moon else TablerIcons.Sun, "theme icon")
+                        IconButton(onClick = { isDark = !isDark }) {
+                            Icon(if (isDark) TablerIcons.Moon else TablerIcons.Sun, "theme icon")
                         }
                         IconButton(onClick = {}) {
                             Icon(TablerIcons.User, "notification icon")
@@ -168,6 +176,9 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 ) {
                     composable<DashboardScreenType> { DashboardScreen() }
                     composable<PointOfSaleScreenType> { PointOfSaleScreen() }
+                    composable<ProductsScreenType> { ProductsScreen() }
+                    composable<CustomersScreenType> { CustomersScreen() }
+                    composable<TransactionsScreenType> { TransactionsScreen() }
                 }
             }
         }
@@ -183,43 +194,65 @@ private fun NavPageItems(
     Column {
         val curRoute by navController.currentBackStackEntryAsState()
         // Dashboard
-        Row(
-            modifier = Modifier
-                .padding(PixelDensity.small)
-                .clip(RoundedCornerShape(30))
-                .background(
-                    if (curRoute?.destination?.route == DashboardScreenType::class.qualifiedName) MaterialTheme.colorScheme.inversePrimary
-                    else MaterialTheme.colorScheme.surface
-                )
-                .clickable(
-                    enabled = curRoute?.destination?.route != DashboardScreenType::class.qualifiedName,
-                    onClick = {navController.navigate(DashboardScreenType)}
-                )
-                .then(modifier),
-            horizontalArrangement = Arrangement.spacedBy(PixelDensity.medium),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(TablerIcons.Home, "dashboard page")
-            if (showText) Text("Dashboard", maxLines = 1, overflow = TextOverflow.Ellipsis)
-        }
+        NavPageItem<DashboardScreenType>(
+            curRoute, navController,
+            "Dashboard", TablerIcons.Home,
+            modifier, showText
+        )
         // Point of Sale
-        Row(
-            modifier = Modifier
-                .padding(PixelDensity.small)
-                .clip(RoundedCornerShape(30))
-                .background(
-                    if (curRoute?.destination?.route == PointOfSaleScreenType::class.qualifiedName) MaterialTheme.colorScheme.inversePrimary
-                    else MaterialTheme.colorScheme.surface
-                )
-                .clickable(
-                    enabled = curRoute?.destination?.route != PointOfSaleScreenType::class.qualifiedName,
-                    onClick = {navController.navigate(PointOfSaleScreenType)}
-                )
-                .then(modifier),
-            horizontalArrangement = Arrangement.spacedBy(PixelDensity.small)
-        ) {
-            Icon(TablerIcons.ShoppingCart, "point of sale page")
-            if (showText) Text("Point of Sale", maxLines = 1, overflow = TextOverflow.Ellipsis)
-        }
+        NavPageItem<PointOfSaleScreenType>(
+            curRoute, navController,
+            "Point of Sale", TablerIcons.ShoppingCart,
+            modifier, showText
+        )
+        // Product
+        NavPageItem<ProductsScreenType>(
+            curRoute, navController,
+            "Product", TablerIcons.Box,
+            modifier, showText
+        )
+        // Product
+        NavPageItem<CustomersScreenType>(
+            curRoute, navController,
+            "Customers", TablerIcons.Users,
+            modifier, showText
+        )
+        // Transactions
+        NavPageItem<TransactionsScreenType>(
+            curRoute, navController,
+            "Transactions", TablerIcons.CreditCard,
+            modifier, showText
+        )
+    }
+}
+
+
+@Composable
+private inline fun <reified T> NavPageItem(
+    curRoute: NavBackStackEntry?,
+    navController: NavHostController,
+    title: String,
+    imageVector: ImageVector,
+    modifier: Modifier,
+    showText: Boolean
+) {
+    Row(
+        modifier = Modifier
+            .padding(PixelDensity.small)
+            .clip(RoundedCornerShape(30))
+            .background(
+                if (curRoute?.destination?.route == T::class.qualifiedName) MaterialTheme.colorScheme.inversePrimary
+                else MaterialTheme.colorScheme.surface
+            )
+            .clickable(
+                enabled = curRoute?.destination?.route != T::class.qualifiedName,
+                onClick = { navController.navigate(T::class.qualifiedName ?: "") }
+            )
+            .then(modifier),
+        horizontalArrangement = Arrangement.spacedBy(PixelDensity.medium),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(imageVector, "$title page")
+        if (showText) Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }

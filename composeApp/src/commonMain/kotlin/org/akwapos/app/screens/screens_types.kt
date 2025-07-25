@@ -11,3 +11,12 @@ object DashboardScreenType
 
 @Serializable
 object PointOfSaleScreenType
+
+@Serializable
+object ProductsScreenType
+
+@Serializable
+object CustomersScreenType
+
+@Serializable
+object TransactionsScreenType

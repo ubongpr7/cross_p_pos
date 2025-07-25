@@ -2,6 +2,7 @@ package org.akwapos.app.screens.pointofsale
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -16,6 +17,7 @@ import compose.icons.TablerIcons
 import compose.icons.tablericons.*
 import org.akwapos.app.platform.PlatformOrientation
 import org.akwapos.app.theme.*
+
 
 @Composable
 fun PointOfSaleScreen(modifier: Modifier = Modifier) {
@@ -46,6 +48,30 @@ fun PointOfSaleScreen(modifier: Modifier = Modifier) {
             }
         }
     ) { pv ->
+        DisplayPopup(
+            screenModel.showCustomerPopup,
+            onDismiss = { screenModel.showCustomerPopup = !screenModel.showCustomerPopup },
+            content = {
+                CustomerPopup(
+                    modifier = Modifier.background(
+                        MaterialTheme.colorScheme.background,
+                        RoundedCornerShape(5)
+                    ).padding(vertical = PixelDensity.medium),
+                    screenModel = screenModel
+                )
+            })
+        DisplayPopup(
+            screenModel.showTablePopup,
+            onDismiss = { screenModel.showTablePopup = !screenModel.showTablePopup },
+            content = {
+                TablePopup(
+                    modifier = Modifier.background(
+                        MaterialTheme.colorScheme.background,
+                        RoundedCornerShape(5)
+                    ).padding(vertical = PixelDensity.medium),
+                    screenModel = screenModel
+                )
+            })
         when (platformOrientation) {
             is PlatformOrientation.Portrait -> {
                 PortraitDisplay(
@@ -63,6 +89,123 @@ fun PointOfSaleScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun CustomerPopup(modifier: Modifier, screenModel: PointOfSaleScreenModel) {
+    Column(
+        modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Row(
+            Modifier.fillMaxWidth()
+                .padding(horizontal = PixelDensity.large),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Select Customer", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
+            IconButton(onClick = {screenModel.showCustomerPopup = !screenModel.showCustomerPopup}) {
+                Icon(TablerIcons.X, "close")
+            }
+        }
+        HorizontalDivider()
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = PixelDensity.large, vertical = PixelDensity.small),
+            value = screenModel.customer,
+            onValueChange = { screenModel.customer = it },
+            placeholder = { Text("Search customers...") },
+            textStyle = MaterialTheme.typography.bodyMedium
+        )
+        repeat(5) {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = PixelDensity.large, vertical = PixelDensity.verySmall)
+                    .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(10))
+                    .clickable {}
+                    .padding(PixelDensity.large),
+                contentAlignment = Alignment.CenterStart // Align content to the left
+            ) {
+                Text(
+                    text = "Mike Johnson",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+        Box(
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = PixelDensity.large, vertical = PixelDensity.verySmall)
+                .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(10))
+                .clickable {}
+                .padding(PixelDensity.large),
+            contentAlignment = Alignment.CenterStart // Align content to the left
+        ) {
+            Text(
+                text = "Walk-in Customer",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun TablePopup(modifier: Modifier, screenModel: PointOfSaleScreenModel) {
+    Column(
+        modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Row(
+            Modifier.fillMaxWidth()
+                .padding(horizontal = PixelDensity.large),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Select Table", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
+            IconButton(onClick = {screenModel.showTablePopup = !screenModel.showTablePopup}) {
+                Icon(TablerIcons.X, "close")
+            }
+        }
+        HorizontalDivider()
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = PixelDensity.large, vertical = PixelDensity.small),
+            value = screenModel.table,
+            onValueChange = { screenModel.table = it },
+            placeholder = { Text("Search tabes...") },
+            textStyle = MaterialTheme.typography.bodyMedium
+        )
+        repeat(5) {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = PixelDensity.large, vertical = PixelDensity.verySmall)
+                    .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(10))
+                    .clickable {}
+                    .padding(PixelDensity.large),
+                contentAlignment = Alignment.CenterStart // Align content to the left
+            ) {
+                Text(
+                    text = "Table $it",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+        Box(
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = PixelDensity.large, vertical = PixelDensity.verySmall)
+                .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(10))
+                .clickable {}
+                .padding(PixelDensity.large),
+            contentAlignment = Alignment.CenterStart // Align content to the left
+        ) {
+            Text(
+                text = "No Table",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Composable
 private fun PortraitDisplay(modifier: Modifier) {
     val screenModel = viewModel { PointOfSaleScreenModel() }
     Box(modifier) {
@@ -74,28 +217,26 @@ private fun PortraitDisplay(modifier: Modifier) {
                     .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(5))
                     .padding(PixelDensity.medium), horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CurrentSale()
+                CurrentSale(screenModel)
                 DisplayCart()
                 CheckoutButtons()
             }
         } else {
             Column {
-                FilterProductDisplay(Modifier, screenModel)
-                DisplayProducts(Modifier.jVerticalScroll(), screenModel)
+                FilterProductDisplay(screenModel)
+                DisplayProducts(Modifier.jVerticalScroll())
             }
         }
     }
 }
 
 @Composable
-private fun LandScapeDisplay(
-    modifier: Modifier,
-) {
+private fun LandScapeDisplay(modifier: Modifier, ) {
     val screenModel = viewModel { PointOfSaleScreenModel() }
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(PixelDensity.medium)) {
         Column(modifier = Modifier.fillMaxWidth(0.6f), horizontalAlignment = Alignment.CenterHorizontally) {
-            FilterProductDisplay(Modifier, screenModel)
-            DisplayProducts(Modifier.jVerticalScroll(), screenModel)
+            FilterProductDisplay(screenModel)
+            DisplayProducts(Modifier.jVerticalScroll())
         }
         Column(
             modifier = Modifier.weight(0.4f)
@@ -104,7 +245,7 @@ private fun LandScapeDisplay(
                 .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(5))
                 .padding(PixelDensity.medium), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CurrentSale()
+            CurrentSale(screenModel)
             DisplayCart()
             CheckoutButtons()
         }
@@ -112,7 +253,9 @@ private fun LandScapeDisplay(
 }
 
 @Composable
-private fun ColumnScope.CurrentSale() {
+private fun ColumnScope.CurrentSale(
+    screenModel: PointOfSaleScreenModel
+) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -140,7 +283,7 @@ private fun ColumnScope.CurrentSale() {
             text = "Walk-in",
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
             trailingIcon = {
-                TextButton(onClick = {}) {
+                TextButton(onClick = { screenModel.showCustomerPopup = !screenModel.showCustomerPopup }) {
                     Text(
                         modifier = Modifier.padding(start = PixelDensity.small),
                         text = "Change",
@@ -157,7 +300,7 @@ private fun ColumnScope.CurrentSale() {
             text = "No table",
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
             trailingIcon = {
-                TextButton(onClick = {}) {
+                TextButton(onClick = {screenModel.showTablePopup = !screenModel.showTablePopup}) {
                     Text(
                         modifier = Modifier.padding(start = PixelDensity.small),
                         text = "Change",
@@ -265,7 +408,7 @@ private fun ColumnScope.CheckoutButtons() {
 }
 
 @Composable
-private fun ColumnScope.FilterProductDisplay(modifier: Modifier = Modifier, screenModel: PointOfSaleScreenModel) {
+private fun ColumnScope.FilterProductDisplay(screenModel: PointOfSaleScreenModel) {
     FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(PixelDensity.small)) {
         OutlinedTextField(
             value = screenModel.searchProduct,
@@ -286,7 +429,7 @@ private fun ColumnScope.FilterProductDisplay(modifier: Modifier = Modifier, scre
             modifier = Modifier
                 .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(5))
                 .padding(vertical = PixelDensity.verySmall),
-            onClick = {}) {
+            onClick = { screenModel.showCustomerPopup = !screenModel.showCustomerPopup }) {
             Icon(TablerIcons.User, "user icon")
             Text("Customer", style = MaterialTheme.typography.bodyLarge)
         }
@@ -294,7 +437,7 @@ private fun ColumnScope.FilterProductDisplay(modifier: Modifier = Modifier, scre
             modifier = Modifier
                 .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(5))
                 .padding(vertical = PixelDensity.verySmall),
-            onClick = {}) {
+            onClick = {screenModel.showTablePopup = !screenModel.showTablePopup}) {
             Icon(TablerIcons.GripVertical, "table icon")
             Text("Table", style = MaterialTheme.typography.labelMedium)
         }
@@ -364,8 +507,7 @@ private fun ColumnScope.FilterProductDisplay(modifier: Modifier = Modifier, scre
 
 @Composable
 private fun DisplayProducts(
-    modifier: Modifier,
-    screenModel: PointOfSaleScreenModel
+    modifier: Modifier
 ) {
     FlowRow(
         modifier,
