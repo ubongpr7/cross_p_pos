@@ -3,8 +3,8 @@ package org.akwapos.app.screens.products
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import cafe.adriel.voyager.core.model.ScreenModel
 
-class ProductsScreenModel: ViewModel() {
+class ProductsScreenModel: ScreenModel {
     var searchProducts by mutableStateOf("")
 }

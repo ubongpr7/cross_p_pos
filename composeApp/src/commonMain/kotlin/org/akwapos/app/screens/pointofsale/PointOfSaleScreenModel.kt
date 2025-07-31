@@ -3,9 +3,9 @@ package org.akwapos.app.screens.pointofsale
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import cafe.adriel.voyager.core.model.ScreenModel
 
-class PointOfSaleScreenModel: ViewModel() {
+class PointOfSaleScreenModel: ScreenModel {
     var searchProduct by mutableStateOf("")
     var displayCurrentSaleMobile by mutableStateOf(false)
     var customer by mutableStateOf("")

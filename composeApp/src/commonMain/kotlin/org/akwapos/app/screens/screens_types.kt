@@ -1,22 +1,14 @@
 package org.akwapos.app.screens
 
-import kotlinx.serialization.Serializable
+import cafe.adriel.voyager.core.screen.Screen
 
 
-@Serializable
-object HomeScreenType
-
-@Serializable
-object DashboardScreenType
-
-@Serializable
-object PointOfSaleScreenType
-
-@Serializable
-object ProductsScreenType
-
-@Serializable
-object CustomersScreenType
-
-@Serializable
-object TransactionsScreenType
+fun getScreenName(screen: Screen): String {
+    val name = screen::class.simpleName?.removeSuffix("Screen").orEmpty()
+    return buildString {
+        name.forEachIndexed { index, c ->
+            if (c.isUpperCase() && index != 0) append(' ')
+            append(c)
+        }
+    }
+}

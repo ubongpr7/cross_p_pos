@@ -55,9 +55,15 @@ kotlin {
             implementation(libs.coil.network.ktor)
             implementation(libs.multiplatformSettings)
             implementation(libs.kotlinx.datetime)
-            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.0-beta03")
-            implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1")
+//            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.0-beta03")
+//            implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1")
             implementation("br.com.devsrsouza.compose.icons:tabler-icons:1.1.1")
+            val voyagerVersion = "1.1.0-beta02"
+            // Multiplatform
+            // Navigator
+            implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+            // Screen Model
+            implementation("cafe.adriel.voyager:voyager-screenmodel:$voyagerVersion")
         }
 
         commonTest.dependencies {

@@ -1,6 +1,6 @@
 package org.akwapos.app.screens.dashboard
 
-import androidx.lifecycle.ViewModel
+import cafe.adriel.voyager.core.model.ScreenModel
 
-class DashboardScreenModel: ViewModel() {
+class DashboardScreenModel: ScreenModel {
 }

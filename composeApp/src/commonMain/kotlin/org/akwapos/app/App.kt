@@ -1,9 +1,8 @@
 package org.akwapos.app
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import org.akwapos.app.screens.home.HomeScreen
+import cafe.adriel.voyager.navigator.Navigator
+import org.akwapos.app.screens.auth.AuthenticationScreen
 import org.akwapos.app.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -11,7 +10,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 @Composable
 internal fun App() = AppTheme {
-    HomeScreen(Modifier.fillMaxSize())
+//    HomeScreen(Modifier.fillMaxSize())
+    Navigator(AuthenticationScreen)
 }
 //@Preview
 //@Composable
