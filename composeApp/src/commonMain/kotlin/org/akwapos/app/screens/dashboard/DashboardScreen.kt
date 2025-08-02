@@ -41,30 +41,10 @@ object DashboardScreen : Screen {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(PixelDensity.large * 2)
         ) {
-            Row(
-                Modifier.fillMaxWidth(),
-//                    .height(PixelDensity.setValue(platformHeight.toPercentage(10))),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    "Dashboard",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                )
-                DisplayDropDown(
-                    items = listOf({
-                        IconButton(onClick = {}) {
-                            Icon(TablerIcons.Bell, "notification icon")
-                        }
-                    }, {
-                        IconButton(onClick = {}) {
-                            Icon(TablerIcons.User, "notification icon")
-                        }
-                    })
-                ) {
-                    Icon(TablerIcons.DotsVertical, "more item dropdown")
-                }
-            }
+//            Text(
+//                "Dashboard",
+//                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+//            )
             Row(
                 modifier = Modifier.jHorizontalScroll(),
                 horizontalArrangement = Arrangement.spacedBy(PixelDensity.large * 2)

@@ -3,9 +3,23 @@ package org.akwapos.app.screens.transactions
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,9 +33,24 @@ import androidx.compose.ui.text.style.TextOverflow
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import compose.icons.TablerIcons
-import compose.icons.tablericons.*
+import compose.icons.tablericons.Cash
+import compose.icons.tablericons.ChevronDown
+import compose.icons.tablericons.ChevronLeft
+import compose.icons.tablericons.ChevronRight
+import compose.icons.tablericons.ChevronUp
+import compose.icons.tablericons.ClipboardList
+import compose.icons.tablericons.Eye
+import compose.icons.tablericons.EyeOff
+import compose.icons.tablericons.Filter
+import compose.icons.tablericons.Search
+import compose.icons.tablericons.Wallet
 import org.akwapos.app.platform.PlatformOrientation
-import org.akwapos.app.theme.*
+import org.akwapos.app.theme.HorizontalTextIcon
+import org.akwapos.app.theme.LandScapeColumnScroll
+import org.akwapos.app.theme.PixelDensity
+import org.akwapos.app.theme.jHorizontalScroll
+import org.akwapos.app.theme.jVerticalScroll
+import org.akwapos.app.theme.rememberPlatformOrientation
 
 
 object TransactionsScreen : Screen {
@@ -36,49 +65,33 @@ object TransactionsScreen : Screen {
                 is PlatformOrientation.Tablet -> platformOrientation.width to platformOrientation.height
             }
         }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .jVerticalScroll()
-                .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                .padding(PixelDensity.medium),
-//                .then(modifier),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(PixelDensity.large * 2)
-        ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Transactions", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-                Button(onClick = {}) {
-                    Icon(TablerIcons.Download, "download icon")
-                    Text("Export", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold))
+        when (platformOrientation) {
+            is PlatformOrientation.Portrait -> {
+                Column(Modifier.jVerticalScroll().fillMaxSize()) {
+                    DisplayTransactionsFilterMobile(screenModel = screenModel)
+                    DisplayTransactionsMobile(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(vertical = PixelDensity.medium)
+                    )
                 }
             }
-            Column(
-                Modifier
-                    .weight(1f)
-                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(5))
-                    .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(5))
-                    .padding(PixelDensity.large)
-            ) {
-                when (platformOrientation) {
-                    is PlatformOrientation.Portrait -> {
-                        Column(Modifier.jVerticalScroll().fillMaxSize()) {
-                            DisplayTransactionsFilterMobile(screenModel = screenModel)
-                            DisplayTransactionsMobile(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(vertical = PixelDensity.medium)
-                            )
-                        }
-                    }
 
-                    else -> {
-                        DisplayTransactionFilter(screenModel)
-                        DisplayTransactions(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(vertical = PixelDensity.medium),
-                            displayWidth = platformWidth
-                        )
-                    }
+            else -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                        .padding(PixelDensity.medium),
+//                .then(modifier),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(PixelDensity.large * 2)
+                ) {
+                    DisplayTransactionFilter(screenModel)
+                    DisplayTransactions(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(vertical = PixelDensity.medium),
+                        displayWidth = platformWidth
+                    )
                 }
             }
         }
@@ -239,7 +252,10 @@ object TransactionsScreen : Screen {
                                 .width(PixelDensity.setValue(width))
                                 .clip(RoundedCornerShape(20))
                                 .background(randomStock.first)
-                                .padding(horizontal = PixelDensity.verySmall, vertical = PixelDensity.verySmall),
+                                .padding(
+                                    horizontal = PixelDensity.verySmall,
+                                    vertical = PixelDensity.verySmall
+                                ),
                             text = randomStock.second,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -314,7 +330,10 @@ object TransactionsScreen : Screen {
                             .padding(PixelDensity.medium),
                         contentAlignment = Alignment.CenterStart // Align content to the left
                     ) {
-                        Text("Next", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                        Text(
+                            "Next",
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                        )
                     }
                 }
             }
@@ -396,7 +415,8 @@ object TransactionsScreen : Screen {
             Row(
                 Modifier
                     .fillMaxWidth().padding(vertical = PixelDensity.medium),
-                horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     "Showing 5 of 5 transactions",

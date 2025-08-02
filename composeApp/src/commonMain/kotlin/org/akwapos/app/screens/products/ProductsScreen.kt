@@ -35,49 +35,33 @@ object ProductsScreen : Screen {
                 is PlatformOrientation.Tablet -> platformOrientation.width to platformOrientation.height
             }
         }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .jVerticalScroll()
-                .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                .padding(PixelDensity.medium),
-//            .then(modifier),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(PixelDensity.large * 2)
-        ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Products", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-                Button(onClick = {}) {
-                    Icon(TablerIcons.Plus, "add icon")
-                    Text("Product", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold))
+        when (platformOrientation) {
+            is PlatformOrientation.Portrait -> {
+                Column(Modifier.jVerticalScroll().fillMaxSize()) {
+                    DisplayProductFilterMobile(screenModel = screenModel)
+                    DisplayProductsMobile(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(vertical = PixelDensity.medium)
+                    )
                 }
             }
-            Column(
-                Modifier
-                    .weight(1f)
-                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(5))
-                    .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(5))
-                    .padding(PixelDensity.large)
-            ) {
-                when (platformOrientation) {
-                    is PlatformOrientation.Portrait -> {
-                        Column(Modifier.jVerticalScroll().fillMaxSize()) {
-                            DisplayProductFilterMobile(screenModel = screenModel)
-                            DisplayProductsMobile(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(vertical = PixelDensity.medium)
-                            )
-                        }
-                    }
 
-                    else -> {
-                        DisplayProductFilter(screenModel)
-                        DisplayProducts(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(vertical = PixelDensity.medium),
-                            displayWidth = platformWidth
-                        )
-                    }
+            else -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                        .padding(PixelDensity.medium),
+//            .then(modifier),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(PixelDensity.large * 2)
+                ) {
+                    DisplayProductFilter(screenModel)
+                    DisplayProducts(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(vertical = PixelDensity.medium),
+                        displayWidth = platformWidth
+                    )
                 }
             }
         }
@@ -122,7 +106,8 @@ object ProductsScreen : Screen {
             Row(
                 Modifier
                     .fillMaxWidth().padding(vertical = PixelDensity.medium),
-                horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     "Showing 5 of 5 products",
@@ -293,7 +278,9 @@ object ProductsScreen : Screen {
                 singleLine = true,
                 placeholder = {
                     Text(
-                        "Search products by name, SKU, or category...",
+                        "Search products by name, SKU, or category",
+                        maxLines = 1,
+                        overflow = TextOverflow.MiddleEllipsis,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 },
@@ -337,7 +324,8 @@ object ProductsScreen : Screen {
             Column(Modifier.jHorizontalScroll()) {
                 val width = remember(displayWidth) { displayWidth / 8 }
                 Row(
-                    Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainerLow)
+                    Modifier.fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surfaceContainerLow)
                         .padding(vertical = PixelDensity.small),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -468,7 +456,10 @@ object ProductsScreen : Screen {
                                 .width(PixelDensity.setValue(width))
                                 .clip(RoundedCornerShape(20))
                                 .background(randomStock.first)
-                                .padding(horizontal = PixelDensity.verySmall, vertical = PixelDensity.verySmall),
+                                .padding(
+                                    horizontal = PixelDensity.verySmall,
+                                    vertical = PixelDensity.verySmall
+                                ),
                             text = randomStock.second,
                             maxLines = 1,
                             overflow = TextOverflow.MiddleEllipsis,
@@ -544,7 +535,10 @@ object ProductsScreen : Screen {
                             .padding(PixelDensity.medium),
                         contentAlignment = Alignment.CenterStart // Align content to the left
                     ) {
-                        Text("Next", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                        Text(
+                            "Next",
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                        )
                     }
                 }
             }
@@ -564,7 +558,9 @@ object ProductsScreen : Screen {
                 onValueChange = { screenModel.searchProducts = it },
                 placeholder = {
                     Text(
-                        "Search products by name, SKU, or category...",
+                        "Search products by name, SKU, or category",
+                        maxLines = 1,
+                        overflow = TextOverflow.MiddleEllipsis,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 },

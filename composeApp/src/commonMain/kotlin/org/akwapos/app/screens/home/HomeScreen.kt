@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.model.ScreenModel
@@ -27,11 +28,11 @@ import org.akwapos.app.platform.PlatformOrientation
 import org.akwapos.app.platform.getPlatform
 import org.akwapos.app.screens.customers.CustomersScreen
 import org.akwapos.app.screens.dashboard.DashboardScreen
-import org.akwapos.app.screens.getScreenName
 import org.akwapos.app.screens.pointofsale.PointOfSaleScreen
 import org.akwapos.app.screens.products.ProductsScreen
 import org.akwapos.app.screens.transactions.TransactionsScreen
 import org.akwapos.app.theme.*
+import org.akwapos.app.utils.Tools
 import org.akwapos.app.utils.toPercentage
 
 object HomeScreenModel : ScreenModel {
@@ -73,6 +74,7 @@ object HomeScreen : Screen {
                                         platformOrientation.width.toPercentage(70).dp
                                 )
                             ) {
+                                scope.launch { homeScreenModel.drawerState.close() }
                                 Box(
                                     Modifier.fillMaxWidth()
                                         .height(
@@ -122,9 +124,8 @@ object HomeScreen : Screen {
                                             homeScreenModel.drawerState.open()
                                         }
                                     }) {
-
                                         Icon(
-                                            TablerIcons.Menu2,
+                                            TablerIcons.DotsVertical,
                                             "display navigation items",
                                             tint = MaterialTheme.colorScheme.onBackground
                                         )
@@ -153,21 +154,65 @@ object HomeScreen : Screen {
                             title = {
                                 Text(
                                     homeScreenModel.screenName,
-                                    style = MaterialTheme.typography.titleLarge
+                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                                 )
                             },
                             actions = {
-                                IconButton(onClick = {}) {
-                                    Icon(TablerIcons.Bell, "notification icon")
-                                }
-                                IconButton(onClick = { isDark = !isDark }) {
-                                    Icon(
-                                        if (isDark) TablerIcons.Moon else TablerIcons.Sun,
-                                        "theme icon"
-                                    )
-                                }
-                                IconButton(onClick = {}) {
-                                    Icon(TablerIcons.User, "notification icon")
+                                if (platformOrientation is PlatformOrientation.Portrait) {
+                                    DisplayDropDown(
+                                        items = listOf(
+                                            {
+                                                HorizontalTextIcon(
+                                                    text = "Notification's",
+                                                    leadingIcon = {
+                                                        Icon(TablerIcons.Bell, "notification icon")
+                                                    }
+                                                )
+                                            },
+                                            {
+                                                HorizontalTextIcon(
+                                                    modifier = Modifier.clickable {
+                                                        isDark = !isDark
+                                                    },
+                                                    text = "Theme",
+                                                    leadingIcon = {
+                                                        Icon(
+                                                            if (isDark) TablerIcons.Moon else TablerIcons.Sun,
+                                                            "theme icon"
+                                                        )
+                                                    }
+                                                )
+                                            },
+                                            {
+                                                HorizontalTextIcon(
+                                                    text = "Profile",
+                                                    leadingIcon = {
+                                                        Icon(TablerIcons.User, "user icon")
+                                                    }
+                                                )
+                                            }
+                                        )
+                                    ) {
+                                        Icon(
+                                            TablerIcons.List,
+                                            "display navigation items",
+                                            tint = MaterialTheme.colorScheme.onBackground
+                                        )
+                                    }
+                                } else {
+                                    IconButton(onClick = {}) {
+                                        Icon(TablerIcons.Bell, "notification icon")
+                                    }
+
+                                    IconButton(onClick = { isDark = !isDark }) {
+                                        Icon(
+                                            if (isDark) TablerIcons.Moon else TablerIcons.Sun,
+                                            "theme icon"
+                                        )
+                                    }
+                                    IconButton(onClick = {}) {
+                                        Icon(TablerIcons.User, "notification icon")
+                                    }
                                 }
                             })
                     }
@@ -219,7 +264,7 @@ object HomeScreen : Screen {
                     scope.launch {
                         navigator.push(screen)
                         homeScreenModel.drawerState.close()
-                        homeScreenModel.screenName = getScreenName(screen)
+                        homeScreenModel.screenName = Tools.getScreenName(screen)
                     }
                 }
                 .padding(PixelDensity.small),

@@ -36,56 +36,35 @@ object CustomersScreen : Screen {
                 is PlatformOrientation.Tablet -> platformOrientation.width to platformOrientation.height
             }
         }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .jVerticalScroll()
-                .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                .padding(PixelDensity.medium),
-//            .then(modifier),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(PixelDensity.large * 2)
-        ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Customers", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-                Button(onClick = {}) {
-                    Icon(TablerIcons.Plus, "add icon")
-                    Text(
-                        "Add Customer",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+        when (platformOrientation) {
+            is PlatformOrientation.Portrait -> {
+                Column(Modifier.jVerticalScroll().fillMaxSize()) {
+                    DisplayCustomersFilterMobile(screenModel = screenModel)
+                    DisplayCustomersMobile(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(vertical = PixelDensity.medium)
                     )
                 }
             }
 
-            Column(
-                Modifier
-                    .weight(1f)
-                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(5))
-                    .border(PixelDensity.setValue(1), MaterialTheme.colorScheme.onBackground, RoundedCornerShape(5))
-                    .padding(PixelDensity.large)
-            ) {
-                when (platformOrientation) {
-                    is PlatformOrientation.Portrait -> {
-                        Column(Modifier.jVerticalScroll().fillMaxSize()) {
-                            DisplayCustomersFilterMobile(screenModel = screenModel)
-                            DisplayCustomersMobile(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(vertical = PixelDensity.medium)
-                            )
-                        }
-                    }
-
-                    else -> {
-                        DisplayCustomerFilter(screenModel)
-                        DisplayCustomers(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(vertical = PixelDensity.medium),
-                            displayWidth = platformWidth
-                        )
-                    }
+            else -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                        .padding(PixelDensity.medium),
+//            .then(modifier),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(PixelDensity.large * 2)
+                ) {
+                    DisplayCustomerFilter(screenModel)
+                    DisplayCustomers(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(vertical = PixelDensity.medium),
+                        displayWidth = platformWidth
+                    )
                 }
             }
-
         }
     }
 
@@ -167,7 +146,8 @@ object CustomersScreen : Screen {
             Row(
                 Modifier
                     .fillMaxWidth().padding(vertical = PixelDensity.medium),
-                horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     "Showing 5 of 5 customers",
@@ -248,7 +228,11 @@ object CustomersScreen : Screen {
                 }
                 Row(
                     Modifier.fillMaxWidth()
-                        .padding(bottom = PixelDensity.small, start = PixelDensity.small, end = PixelDensity.small),
+                        .padding(
+                            bottom = PixelDensity.small,
+                            start = PixelDensity.small,
+                            end = PixelDensity.small
+                        ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -377,6 +361,7 @@ object CustomersScreen : Screen {
             }
         }
     }
+
 
     @Composable
     private fun ColumnScope.DisplayCustomers(
@@ -525,7 +510,10 @@ object CustomersScreen : Screen {
                                 .width(PixelDensity.setValue(width))
                                 .clip(RoundedCornerShape(20))
                                 .background(randomStock.first)
-                                .padding(horizontal = PixelDensity.verySmall, vertical = PixelDensity.verySmall),
+                                .padding(
+                                    horizontal = PixelDensity.verySmall,
+                                    vertical = PixelDensity.verySmall
+                                ),
                             text = randomStock.second,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -600,7 +588,10 @@ object CustomersScreen : Screen {
                             .padding(PixelDensity.medium),
                         contentAlignment = Alignment.CenterStart // Align content to the left
                     ) {
-                        Text("Next", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                        Text(
+                            "Next",
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                        )
                     }
                 }
             }
