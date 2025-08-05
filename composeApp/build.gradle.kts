@@ -11,6 +11,8 @@ plugins {
     alias(libs.plugins.hotReload)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.buildConfig)
+    id("app.cash.sqldelight") version "2.1.0"
+
 }
 
 kotlin {
@@ -64,6 +66,7 @@ kotlin {
             implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
             // Screen Model
             implementation("cafe.adriel.voyager:voyager-screenmodel:$voyagerVersion")
+            implementation("app.cash.sqldelight:coroutines-extensions:2.0.1")
         }
 
         commonTest.dependencies {
@@ -78,16 +81,25 @@ kotlin {
             implementation(libs.androidx.activityCompose)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.ktor.client.okhttp)
+            implementation("app.cash.sqldelight:android-driver:2.1.0")
         }
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
+            implementation("app.cash.sqldelight:sqlite-driver:2.1.0")
         }
 
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation("app.cash.sqldelight:native-driver:2.1.0")
+        }
+
+        wasmJsMain.dependencies {
+            implementation(compose.html.core)
+            implementation("app.cash.sqldelight:web-worker-driver:2.1.0")
+            implementation(devNpm("copy-webpack-plugin", "9.1.0"))
         }
 
     }
@@ -145,4 +157,12 @@ tasks.withType<ComposeHotRun>().configureEach {
 buildConfig {
     // BuildConfig configuration here.
     // https://github.com/gmazzo/gradle-buildconfig-plugin#usage-in-kts
+}
+sqldelight {
+    databases {
+        create("AkwaposDatabase") {
+            packageName.set("database.akwapos")
+            generateAsync.set(true)
+        }
+    }
 }
