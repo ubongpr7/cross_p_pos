@@ -1,0 +1,16 @@
+
+CREATE TABLE IF NOT EXISTS AuthStore (
+  id INTEGER NOT NULL PRIMARY KEY,    -- always 1 to maintain a single entry
+  json TEXT,                          -- stores JSON data
+  isVerified INTEGER NOT NULL DEFAULT 0  -- SQLite has no BOOLEAN, so we use INTEGER
+);
+
+insertOrReplaceAuthStore:
+INSERT OR REPLACE INTO AuthStore(id, json, isVerified)
+VALUES (1, ?, ?);
+
+getAuthStore:
+SELECT * FROM AuthStore WHERE id = 1;
+
+deleteAuthStore:
+DELETE FROM AuthStore WHERE id = 1;

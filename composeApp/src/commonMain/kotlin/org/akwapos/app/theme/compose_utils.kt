@@ -1,7 +1,14 @@
 package org.akwapos.app.theme
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -22,10 +29,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -33,17 +48,27 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.text.*
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.akwapos.app.models.ComposeTextModel
+import org.akwapos.app.models.SlideAction
 import org.akwapos.app.platform.PlatformOrientation
 import org.akwapos.app.utils.isBetween
 import kotlin.math.abs
@@ -72,11 +97,11 @@ fun Modifier.drawUnderLine(color: Color, thickness: Dp): Modifier = composed {
 fun HorizontalTextIcon(
     text: String,
     modifier: Modifier = Modifier,
-    vSpacing:Dp = PixelDensity.medium,
+    vSpacing: Dp = PixelDensity.medium,
     overflow: TextOverflow = TextOverflow.Clip,
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
-    hSpacing:Dp = PixelDensity.large,
+    hSpacing: Dp = PixelDensity.large,
     style: TextStyle = TextStyle.Default,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null
@@ -102,19 +127,29 @@ fun HorizontalTextIcon(
 @Composable
 fun rememberPlatformOrientation(): PlatformOrientation {
     val configuration = LocalWindowInfo.current
-    val check = (configuration.containerSize.width - configuration.containerSize.height).absoluteValue
+    val check =
+        (configuration.containerSize.width - configuration.containerSize.height).absoluteValue
     return remember(check) {
         when {
             configuration.containerSize.width.isBetween(600, 700) -> {
-                PlatformOrientation.Tablet(configuration.containerSize.width, configuration.containerSize.height)
+                PlatformOrientation.Tablet(
+                    configuration.containerSize.width,
+                    configuration.containerSize.height
+                )
             }
 
             configuration.containerSize.width > configuration.containerSize.height -> {
-                PlatformOrientation.LandScape(configuration.containerSize.width, configuration.containerSize.height)
+                PlatformOrientation.LandScape(
+                    configuration.containerSize.width,
+                    configuration.containerSize.height
+                )
             }
 
             else -> {
-                PlatformOrientation.Portrait(configuration.containerSize.width, configuration.containerSize.height)
+                PlatformOrientation.Portrait(
+                    configuration.containerSize.width,
+                    configuration.containerSize.height
+                )
             }
         }
     }
@@ -202,9 +237,8 @@ fun StyledText(
 
 
 @Composable
-fun Modifier.jHorizontalScroll(): Modifier {
+fun Modifier.jHorizontalScroll(scrollState : ScrollState = rememberScrollState()): Modifier {
     val coroutineScope = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
     return this
         .horizontalScroll(scrollState)
         .draggable(
@@ -218,9 +252,8 @@ fun Modifier.jHorizontalScroll(): Modifier {
 }
 
 @Composable
-fun Modifier.jVerticalScroll(): Modifier {
+fun Modifier.jVerticalScroll(scrollState: ScrollState = rememberScrollState()): Modifier {
     val coroutineScope = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
     return this
         .verticalScroll(scrollState)
         .draggable(
@@ -341,9 +374,11 @@ fun LandScapeColumnScroll(
             // Scroll thumb
             if (contentHeight > 0 && viewportHeight > 0) {
                 val scrollableHeight = contentHeight - viewportHeight
-                val thumbHeight = (viewportHeight.toFloat() / contentHeight * viewportHeight).coerceAtLeast(20f)
-                val thumbOffset = (scrollState.value.toFloat() / scrollableHeight * (viewportHeight - thumbHeight))
-                    .coerceIn(0f, viewportHeight - thumbHeight)
+                val thumbHeight =
+                    (viewportHeight.toFloat() / contentHeight * viewportHeight).coerceAtLeast(20f)
+                val thumbOffset =
+                    (scrollState.value.toFloat() / scrollableHeight * (viewportHeight - thumbHeight))
+                        .coerceIn(0f, viewportHeight - thumbHeight)
 
                 Box(
                     modifier = Modifier
@@ -367,4 +402,75 @@ fun LandScapeColumnScroll(
             content = content
         )
     }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DisplayDropDown(
+    shape: Shape = MaterialTheme.shapes.medium,
+    containerColor :Color = MaterialTheme.colorScheme.surface,
+    borderStroke: BorderStroke? = null,
+    items: List<@Composable () -> Unit>,
+    onClick: () -> Unit = {},
+    content: @Composable () -> Unit
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+    Box(modifier = Modifier.clickable {
+        isExpanded = !isExpanded
+        onClick()
+    }) {
+        content()
+        DropdownMenu(
+            modifier = Modifier.padding(PixelDensity.medium),
+            shape = shape,
+            containerColor = containerColor,
+            border = borderStroke,
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = !isExpanded }
+        ) {
+            for (item in items) {
+                item()
+            }
+        }
+    }
+}
+
+
+@Composable
+fun InfiniteSlideIcon(
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    distance: Dp = 30.dp,
+    durationMillis: Int = 2000,
+    animateVertical: Boolean = true,
+    movementStyle: SlideAction = SlideAction.ContinuousDown
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "slideAnim")
+
+    val distancePx = with(LocalDensity.current) { distance.toPx() }
+
+    val offset by infiniteTransition.animateFloat(
+        initialValue = -distancePx,
+        targetValue = distancePx,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis),
+            repeatMode = when (movementStyle) {
+                SlideAction.ContinuousDown -> RepeatMode.Restart
+                SlideAction.Bounce -> RepeatMode.Reverse
+            }        ),
+        label = "offsetAnim"
+    )
+
+    Icon(
+        imageVector = icon,
+        contentDescription = null,
+        modifier = modifier.graphicsLayer {
+            if (animateVertical) {
+                translationY = offset
+            } else {
+                translationX = offset
+            }
+        }
+    )
 }

@@ -1,8 +1,12 @@
 package org.akwapos.app
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import cafe.adriel.voyager.navigator.Navigator
+import org.akwapos.app.core.LocalDatabaseManager
+import org.akwapos.app.screens.auth.AuthenticationScreen
 import org.akwapos.app.screens.home.HomeScreen
 import org.akwapos.app.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -11,7 +15,19 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 @Composable
 internal fun App() = AppTheme {
-    HomeScreen(Modifier.fillMaxSize())
+    val isVerified = rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(null) {
+        LocalDatabaseManager.initializeDatabase()
+        val db = LocalDatabaseManager.getAuthStore()
+        println(db)
+        isVerified.value = (db != null && db.isVerified && db.json.trim().isNotEmpty())
+    }
+    if (isVerified.value) {
+        Navigator(HomeScreen)
+    } else {
+        Navigator(AuthenticationScreen)
+    }
+//    HomeScreen(Modifier.fillMaxSize())
 }
 //@Preview
 //@Composable

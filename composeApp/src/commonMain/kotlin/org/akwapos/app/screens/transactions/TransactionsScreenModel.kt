@@ -3,8 +3,8 @@ package org.akwapos.app.screens.transactions
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import cafe.adriel.voyager.core.model.ScreenModel
 
-class TransactionsScreenModel: ViewModel() {
+class TransactionsScreenModel: ScreenModel {
     var searchTransactions by mutableStateOf("")
 }
