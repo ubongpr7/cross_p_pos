@@ -17,6 +17,8 @@ import org.akwapos.app.models.UserDataModel
 private const val ROOTPATH = "https://dev.users.destinybuilders.africa"
 private const val API_ROOT_PATH = "$ROOTPATH/api/v1"
 private const val AUTH_ROOT_PATH = "$ROOTPATH/jwt"
+
+
 //"https://dev.users.destinybuilders.africa/api/v1"
 
 

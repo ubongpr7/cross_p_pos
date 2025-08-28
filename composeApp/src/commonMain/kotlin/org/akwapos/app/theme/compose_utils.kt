@@ -124,6 +124,38 @@ fun HorizontalTextIcon(
     }
 }
 
+
+@Composable
+fun VerticalTextIcon(
+    text: String,
+    modifier: Modifier = Modifier,
+    vSpacing: Dp = PixelDensity.medium,
+    overflow: TextOverflow = TextOverflow.Clip,
+    maxLines: Int = Int.MAX_VALUE,
+    minLines: Int = 1,
+    hSpacing: Dp = PixelDensity.large,
+    style: TextStyle = TextStyle.Default,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (leadingIcon != null) leadingIcon()
+        Text(
+            modifier = Modifier.padding(horizontal = hSpacing, vertical = vSpacing),
+            text = text,
+            style = style,
+            overflow = overflow,
+            maxLines = maxLines,
+            minLines = minLines,
+        )
+        if (trailingIcon != null) trailingIcon()
+    }
+}
+
 @Composable
 fun rememberPlatformOrientation(): PlatformOrientation {
     val configuration = LocalWindowInfo.current

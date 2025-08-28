@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -20,6 +22,7 @@ import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import compose.icons.TablerIcons
 import compose.icons.tablericons.*
+import org.akwapos.app.models.product.PosProductModel
 import org.akwapos.app.platform.PlatformOrientation
 import org.akwapos.app.theme.*
 
@@ -69,6 +72,8 @@ object ProductsScreen : Screen {
 
     @Composable
     private fun DisplayProductsMobile(modifier: Modifier) {
+        val screenModel = rememberScreenModel { ProductsScreenModel() }
+        val products by screenModel.products.collectAsState()
         Column(modifier) {
             Row(
                 Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainerLow)
@@ -89,20 +94,21 @@ object ProductsScreen : Screen {
                     )
 
                 )
-                Text(
-                    text = "Actions",
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    )
-                )
             }
-            repeat(10) {
+
+            products?.forEach { product ->
                 DisplayProductMobile(
-                    Modifier.padding(vertical = PixelDensity.verySmall)
-                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                    modifier = Modifier.padding(vertical = PixelDensity.verySmall)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                    product = product
                 )
-            }
+            } ?: Box(
+                Modifier.fillMaxWidth().height(PixelDensity.large * 3)
+                    .clip(MaterialTheme.shapes.medium)
+                    .createShimmer(listOf(Color.LightGray, Color.White, Color.LightGray))
+                    .padding(vertical = PixelDensity.verySmall)
+            )
+
             Row(
                 Modifier
                     .fillMaxWidth().padding(vertical = PixelDensity.medium),
@@ -144,16 +150,9 @@ object ProductsScreen : Screen {
     }
 
     @Composable
-    private fun DisplayProductMobile(modifier: Modifier = Modifier) {
+    private fun DisplayProductMobile(modifier: Modifier = Modifier, product: PosProductModel) {
         Column(modifier) {
             val isExpand = remember { mutableStateOf(false) }
-            val bgColor = remember {
-                listOf(
-                    Color.Green.copy(alpha = 0.5f),
-                    Color.Red.copy(alpha = 0.5f),
-                    Color.Yellow.copy(alpha = 0.5f),
-                ).random()
-            }
             Row(
                 Modifier.fillMaxWidth()
                     .padding(vertical = PixelDensity.small),
@@ -161,6 +160,7 @@ object ProductsScreen : Screen {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 HorizontalTextIcon(
+                    modifier = Modifier.weight(0.7f),
                     leadingIcon = {
                         IconButton(onClick = { isExpand.value = !isExpand.value }) {
                             Icon(
@@ -169,26 +169,28 @@ object ProductsScreen : Screen {
                             )
                         }
                     },
-                    text = "Coca Cola",
+                    text = product.name ?: "No name",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                 )
-                IconButton(onClick = {}) {
-                    Icon(
-                        TablerIcons.Edit,
-                        "edit icon",
-                        tint = MaterialTheme.colorScheme.secondary
-                    )
-                }
+                VerticalTextIcon(
+                    modifier = Modifier.weight(0.3f),
+                    text = "In Stock",
+                    trailingIcon = {
+                        Text(
+                            text = "${product.totalStock ?: 0}",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                )
             }
 
-            HorizontalDivider(color = bgColor)
             if (isExpand.value) {
-                Column(
-                    Modifier.background(bgColor)
-                ) {
+                Column {
                     Row(
                         Modifier.fillMaxWidth()
                             .padding(PixelDensity.small),
@@ -231,28 +233,28 @@ object ProductsScreen : Screen {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "FOOD-001",
+                            text = product.useBarcode ?: "None",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.Center
                             )
                         )
                         Text(
-                            text = "Food",
+                            text = product.category ?: "None",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.Center
                             )
                         )
                         Text(
-                            text = "$8.99",
+                            text = product.basePrice ?: "None",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.Center
                             )
                         )
                         Text(
-                            text = "100",
+                            text = product.lowStockThreshold.toString(),
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.Center
@@ -320,6 +322,8 @@ object ProductsScreen : Screen {
         modifier: Modifier,
         displayWidth: Int
     ) {
+        val screenModel = rememberScreenModel { ProductsScreenModel() }
+        val products by screenModel.products.collectAsState()
         LandScapeColumnScroll(modifier) {
             Column(Modifier.jHorizontalScroll()) {
                 val width = remember(displayWidth) { displayWidth / 8 }
@@ -370,32 +374,9 @@ object ProductsScreen : Screen {
                             textAlign = TextAlign.Center
                         )
                     )
-                    Text(
-                        modifier = Modifier.width(PixelDensity.setValue(width)),
-                        text = "Status",
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Center
-                        )
-                    )
-                    Text(
-                        modifier = Modifier.width(PixelDensity.setValue(width)),
-                        text = "Actions",
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Center
-                        )
-                    )
                 }
 
-                repeat(10) {
-                    val randomStock = remember {
-                        listOf(
-                            Pair(Color.Green.copy(alpha = 0.5f), "In Stock"),
-                            Pair(Color.Red.copy(alpha = 0.5f), "Out of Stock"),
-                            Pair(Color.Yellow.copy(alpha = 0.5f), "Low Stock"),
-                        ).random()
-                    }
+                products?.forEach { product ->
                     Row(
                         Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -403,7 +384,7 @@ object ProductsScreen : Screen {
                     ) {
                         Text(
                             modifier = Modifier.width(PixelDensity.setValue(width)),
-                            text = "Coca cola",
+                            text = product.name ?: "No name",
                             maxLines = 1,
                             overflow = TextOverflow.MiddleEllipsis,
                             style = MaterialTheme.typography.bodyLarge.copy(
@@ -413,7 +394,7 @@ object ProductsScreen : Screen {
                         )
                         Text(
                             modifier = Modifier.width(PixelDensity.setValue(width)),
-                            text = "FOOD-001",
+                            text = product.useBarcode ?: "None",
                             maxLines = 1,
                             overflow = TextOverflow.MiddleEllipsis,
                             style = MaterialTheme.typography.bodyLarge.copy(
@@ -423,7 +404,7 @@ object ProductsScreen : Screen {
                         )
                         Text(
                             modifier = Modifier.width(PixelDensity.setValue(width)),
-                            text = "Food",
+                            text = product.category ?: "None",
                             maxLines = 1,
                             overflow = TextOverflow.MiddleEllipsis,
                             style = MaterialTheme.typography.bodyLarge.copy(
@@ -433,7 +414,7 @@ object ProductsScreen : Screen {
                         )
                         Text(
                             modifier = Modifier.width(PixelDensity.setValue(width)),
-                            text = "$8.99",
+                            text = "$${product.basePrice ?: 0.0}",
                             maxLines = 1,
                             overflow = TextOverflow.MiddleEllipsis,
                             style = MaterialTheme.typography.bodyLarge.copy(
@@ -443,7 +424,7 @@ object ProductsScreen : Screen {
                         )
                         Text(
                             modifier = Modifier.width(PixelDensity.setValue(width)),
-                            text = "100",
+                            text = "${product.lowStockThreshold?: "0"}",
                             maxLines = 1,
                             overflow = TextOverflow.MiddleEllipsis,
                             style = MaterialTheme.typography.bodyLarge.copy(
@@ -451,36 +432,6 @@ object ProductsScreen : Screen {
                                 textAlign = TextAlign.Center
                             )
                         )
-                        Text(
-                            modifier = Modifier
-                                .width(PixelDensity.setValue(width))
-                                .clip(RoundedCornerShape(20))
-                                .background(randomStock.first)
-                                .padding(
-                                    horizontal = PixelDensity.verySmall,
-                                    vertical = PixelDensity.verySmall
-                                ),
-                            text = randomStock.second,
-                            maxLines = 1,
-                            overflow = TextOverflow.MiddleEllipsis,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.background,
-                                textAlign = TextAlign.Center
-                            )
-                        )
-                        Box(
-                            modifier = Modifier.width(PixelDensity.setValue(width)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            IconButton(onClick = {}) {
-                                Icon(
-                                    TablerIcons.Edit,
-                                    "edit icon",
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-                        }
                     }
                     HorizontalDivider()
                 }

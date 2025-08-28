@@ -324,6 +324,7 @@ object AuthenticationScreen : Screen {
                 modifier = Modifier.fillMaxWidth(),
                 value = screenModel.email,
                 onValueChange = { screenModel.email = it },
+                singleLine = true,
                 label = { Text("Email", style = MaterialTheme.typography.bodySmall) }
             )
             OutlinedTextField(
@@ -332,6 +333,7 @@ object AuthenticationScreen : Screen {
                 onValueChange = { screenModel.password = it },
                 visualTransformation = if (screenModel.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 label = { Text("Password", style = MaterialTheme.typography.bodySmall) },
+                singleLine = true,
                 trailingIcon = {
                     IconButton(onClick = {
                         screenModel.isPasswordVisible = !screenModel.isPasswordVisible
@@ -401,6 +403,7 @@ object AuthenticationScreen : Screen {
                 modifier = Modifier.fillMaxWidth(),
                 value = screenModel.verifyCode,
                 onValueChange = { screenModel.verifyCode = it },
+                singleLine = true,
                 label = { Text("Verify Code XXXXXX", style = MaterialTheme.typography.bodySmall) }
             )
             Button(
