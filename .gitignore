@@ -665,3 +665,5 @@ xcuserdata/
 Pods/
 *.gpg
 *yarn.lock
+/composeApp/objects.db
+/gradle/wrapper/gradle-wrapper.jar
