@@ -53,8 +53,11 @@ kotlin {
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.client.logging)
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.coil)
-            implementation(libs.coil.network.ktor)
+//            implementation(libs.coil)
+//            implementation(libs.coil.network.ktor)
+            // In commonMain/build.gradle.kts
+            implementation("io.coil-kt.coil3:coil-compose:3.0.0-alpha06") // Or the latest stable version
+            implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-alpha06") // For network loading
             implementation(libs.multiplatformSettings)
             implementation(libs.kotlinx.datetime)
 //            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.0-beta03")

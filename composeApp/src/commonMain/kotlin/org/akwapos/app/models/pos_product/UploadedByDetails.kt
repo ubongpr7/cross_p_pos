@@ -1,11 +1,11 @@
-package org.akwapos.app.models.product
+package org.akwapos.app.models.pos_product
 
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CreatedByDetails(
+data class UploadedByDetails(
     @SerialName("email")
     val email: String?,
     @SerialName("first_name")

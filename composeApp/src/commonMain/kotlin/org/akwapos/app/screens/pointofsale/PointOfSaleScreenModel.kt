@@ -11,7 +11,7 @@ import org.akwapos.app.core.ProductClient
 
 class PointOfSaleScreenModel: ScreenModel {
 
-    val products = ProductClient.getProductsFlow()
+    val product = ProductClient.getProductFlow()
         .stateIn(scope = screenModelScope, started = SharingStarted.WhileSubscribed(5000), null)
 
     var searchProduct by mutableStateOf("")

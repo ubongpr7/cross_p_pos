@@ -1,6 +1,7 @@
 package org.akwapos.app.screens.pointofsale
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,10 +22,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
+import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import compose.icons.TablerIcons
 import compose.icons.tablericons.*
+import org.akwapos.app.models.pos_product.ProductResult
 import org.akwapos.app.platform.PlatformOrientation
 import org.akwapos.app.theme.*
 
@@ -646,68 +653,70 @@ object PointOfSaleScreen : Screen {
     private fun DisplayProducts(
         modifier: Modifier
     ) {
+        val screenModel = rememberScreenModel { PointOfSaleScreenModel() }
+        val product by screenModel.product.collectAsState()
         FlowRow(
             modifier,
             horizontalArrangement = Arrangement.spacedBy(PixelDensity.medium),
             verticalArrangement = Arrangement.spacedBy(PixelDensity.medium)
         ) {
-            repeat(10) {
+            product?.results?.forEach { p ->
                 DisplayProduct(
                     modifier = Modifier
-                        .size(PixelDensity.setValue(150), PixelDensity.setValue(200))
+                        .size(PixelDensity.setValue(150), PixelDensity.setValue(230))
                         .background(MaterialTheme.colorScheme.background, RoundedCornerShape(10))
                         .border(
                             PixelDensity.setValue(1),
                             MaterialTheme.colorScheme.onBackground,
                             RoundedCornerShape(10)
                         )
-                        .padding(PixelDensity.medium)
+                        .padding(PixelDensity.medium),
+                    product = p
                 )
             }
         }
     }
 
     @Composable
-    private fun DisplayProduct(modifier: Modifier) {
+    private fun DisplayProduct(modifier: Modifier, product: ProductResult) {
         Column(
             modifier,
             verticalArrangement = Arrangement.spacedBy(PixelDensity.small),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start
         ) {
-            Box(
+            Image(
+                painter = rememberAsyncImagePainter(product.mainImage),
+                contentDescription = "product image",
                 modifier = Modifier
                     .size(PixelDensity.setValue(150), PixelDensity.setValue(125))
                     .createShimmer(listOf(Color.LightGray, Color.DarkGray), 3000)
+            )
+            Text(
+                product.name ?: "No name",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+            )
+            Text(
+                "custom",
+                modifier = Modifier
+                    .clip(RoundedCornerShape(10))
+                    .background(MaterialTheme.colorScheme.inversePrimary)
+                    .padding(horizontal = PixelDensity.verySmall),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    "Pizza",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                )
-                Text(
-                    "custom",
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(10))
-                        .background(MaterialTheme.colorScheme.inversePrimary)
-                        .padding(horizontal = PixelDensity.verySmall),
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                    )
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    "$8.59",
+                    "${product.posPrice ?: "0.0"}",
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
-                    "stock: 30",
+                    "stock: ${product.stockQuantity}",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                     )

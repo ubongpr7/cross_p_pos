@@ -43,7 +43,7 @@ import compose.icons.tablericons.ClipboardList
 import compose.icons.tablericons.Filter
 import compose.icons.tablericons.Report
 import compose.icons.tablericons.Search
-import org.akwapos.app.models.product.PosProductModel
+import org.akwapos.app.models.pos_product.ProductResult
 import org.akwapos.app.platform.PlatformOrientation
 import org.akwapos.app.theme.HorizontalTextIcon
 import org.akwapos.app.theme.LandScapeColumnScroll
@@ -102,7 +102,7 @@ object ProductsScreen : Screen {
     @Composable
     private fun DisplayProductsMobile(modifier: Modifier) {
         val screenModel = rememberScreenModel { ProductsScreenModel() }
-        val products by screenModel.products.collectAsState()
+        val product by screenModel.product.collectAsState()
         Column(modifier) {
             Row(
                 Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainerLow)
@@ -125,11 +125,11 @@ object ProductsScreen : Screen {
                 )
             }
 
-            products?.forEach { product ->
+            product?.results?.forEach { p ->
                 DisplayProductMobile(
                     modifier = Modifier.padding(vertical = PixelDensity.verySmall)
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-                    product = product
+                    product = p!!
                 )
             } ?: Box(
                 Modifier.fillMaxWidth().height(PixelDensity.large * 3)
@@ -179,7 +179,7 @@ object ProductsScreen : Screen {
     }
 
     @Composable
-    private fun DisplayProductMobile(modifier: Modifier = Modifier, product: PosProductModel) {
+    private fun DisplayProductMobile(modifier: Modifier = Modifier, product: ProductResult) {
         Column(modifier) {
             val isExpand = remember { mutableStateOf(false) }
             Row(
@@ -211,7 +211,7 @@ object ProductsScreen : Screen {
                     text = "In Stock",
                     trailingIcon = {
                         Text(
-                            text = "${product.totalStock ?: 0}",
+                            text = "${product.stockQuantity ?: 0}",
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
@@ -262,14 +262,14 @@ object ProductsScreen : Screen {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = product.useBarcode ?: "None",
+                            text = product.sku ?: "None",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.Center
                             )
                         )
                         Text(
-                            text = product.category ?: "None",
+                            text = product.posCategory ?: "None",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.Center
@@ -283,7 +283,7 @@ object ProductsScreen : Screen {
                             )
                         )
                         Text(
-                            text = product.lowStockThreshold.toString(),
+                            text = product.stockQuantity.toString(),
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.Center
@@ -352,7 +352,7 @@ object ProductsScreen : Screen {
         displayWidth: Int
     ) {
         val screenModel = rememberScreenModel { ProductsScreenModel() }
-        val products by screenModel.products.collectAsState()
+        val product by screenModel.product.collectAsState()
         LandScapeColumnScroll(modifier) {
             Column(Modifier.fillMaxSize().jHorizontalScroll()) {
                 val width = remember(displayWidth) { displayWidth / 6 }
@@ -405,7 +405,7 @@ object ProductsScreen : Screen {
                         )
                     )
                 }
-                 products?.forEach { product ->
+                 product?.results?.forEach { p ->
                         Row(
                             Modifier.fillMaxWidth()
                                 .background(MaterialTheme.colorScheme.surfaceContainerLow,
@@ -418,7 +418,7 @@ object ProductsScreen : Screen {
                         ) {
                             Text(
                                 modifier = Modifier.width(PixelDensity.setValue(width)),
-                                text = product.name ?: "No name",
+                                text = p.name ?: "No name",
                                 maxLines = 1,
                                 overflow = TextOverflow.MiddleEllipsis,
                                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -428,7 +428,7 @@ object ProductsScreen : Screen {
                             )
                             Text(
                                 modifier = Modifier.width(PixelDensity.setValue(width)),
-                                text = product.useBarcode ?: "None",
+                                text = p.sku ?: "None",
                                 maxLines = 1,
                                 overflow = TextOverflow.MiddleEllipsis,
                                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -438,7 +438,7 @@ object ProductsScreen : Screen {
                             )
                             Text(
                                 modifier = Modifier.width(PixelDensity.setValue(width)),
-                                text = product.category ?: "None",
+                                text = p.posCategory ?: "None",
                                 maxLines = 1,
                                 overflow = TextOverflow.MiddleEllipsis,
                                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -448,7 +448,7 @@ object ProductsScreen : Screen {
                             )
                             Text(
                                 modifier = Modifier.width(PixelDensity.setValue(width)),
-                                text = "$${product.basePrice ?: 0.0}",
+                                text = "$${p.posPrice ?: 0.0}",
                                 maxLines = 1,
                                 overflow = TextOverflow.MiddleEllipsis,
                                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -458,7 +458,7 @@ object ProductsScreen : Screen {
                             )
                             Text(
                                 modifier = Modifier.width(PixelDensity.setValue(width)),
-                                text = "${product.lowStockThreshold ?: "0"}",
+                                text = "${p.stockQuantity ?: "0"}",
                                 maxLines = 1,
                                 overflow = TextOverflow.MiddleEllipsis,
                                 style = MaterialTheme.typography.bodyLarge.copy(

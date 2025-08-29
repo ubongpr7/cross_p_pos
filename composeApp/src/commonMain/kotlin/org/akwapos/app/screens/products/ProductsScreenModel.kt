@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 import org.akwapos.app.core.ProductClient
 
 class ProductsScreenModel : ScreenModel {
-    val products = ProductClient.getProductsFlow()
+    val product = ProductClient.getProductFlow()
         .stateIn(scope = screenModelScope, started = SharingStarted.WhileSubscribed(5000), null)
 
     var searchProducts by mutableStateOf("")

@@ -1,4 +1,4 @@
-package org.akwapos.app.models.product
+package org.akwapos.app.models.pos_product
 
 
 import kotlinx.serialization.SerialName
@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ValueDetails(
     @SerialName("attribute")
-    val attribute: Double?,
+    val attribute: Int?,
     @SerialName("attribute_name")
     val attributeName: String?,
     @SerialName("attribute_type")

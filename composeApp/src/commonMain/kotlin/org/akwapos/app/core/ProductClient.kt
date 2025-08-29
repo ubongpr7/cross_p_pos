@@ -11,10 +11,11 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
-import org.akwapos.app.models.product.PosProductModel
+import org.akwapos.app.models.pos_product.PosProductModel
 
 private const val PRODUCT_ROOT_PATH =
-    "https://dev.product.destinybuilders.africa/product_api/products/"
+    "https://dev.product.destinybuilders.africa/product_api/products/pos_products/"
+//    "https://dev.product.destinybuilders.africa/product_api/products/"
 
 object ProductClient {
     private val clientJson = Json {
@@ -31,18 +32,23 @@ object ProductClient {
         }
     }
 
-    suspend fun getAllProducts(): Result<List<PosProductModel>> {
-        return runCatching {
+    suspend fun getAllProduct(): PosProductModel {
+        return try {
             val result = client.get(PRODUCT_ROOT_PATH) {
                 header("Content-Type", "application/json")
             }
+            println(result.bodyAsText())
             val productModel =
-                clientJson.decodeFromString<List<PosProductModel>>(result.bodyAsText())
+                clientJson.decodeFromString<PosProductModel>(result.bodyAsText())
+            println(productModel)
             if (result.status != io.ktor.http.HttpStatusCode.OK) {
                 throw Exception(productModel.toString())
             } else {
                 productModel
             }
+        } catch (e: Exception) {
+            println(e.message)
+            throw Exception(e.message)
         }
     }
 
@@ -60,9 +66,9 @@ object ProductClient {
         }
     }
 
-    fun getProductsFlow(): Flow<List<PosProductModel>?> {
+    fun getProductFlow(): Flow<PosProductModel?> {
         return flow {
-            val p = getAllProducts().getOrNull()
+            val p = getAllProduct()
             emit(p)
         }
     }
