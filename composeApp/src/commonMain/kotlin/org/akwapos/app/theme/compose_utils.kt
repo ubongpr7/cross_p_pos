@@ -410,7 +410,7 @@ fun LandScapeColumnScroll(
                     (viewportHeight.toFloat() / contentHeight * viewportHeight).coerceAtLeast(20f)
                 val thumbOffset =
                     (scrollState.value.toFloat() / scrollableHeight * (viewportHeight - thumbHeight))
-                        .coerceIn(0f, viewportHeight - thumbHeight)
+                        .coerceIn(0f, maxOf(0f,(viewportHeight - thumbHeight)))
 
                 Box(
                     modifier = Modifier
