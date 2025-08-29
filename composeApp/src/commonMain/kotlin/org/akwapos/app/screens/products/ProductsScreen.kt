@@ -2,10 +2,24 @@ package org.akwapos.app.screens.products
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,10 +35,25 @@ import androidx.compose.ui.text.style.TextOverflow
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import compose.icons.TablerIcons
-import compose.icons.tablericons.*
-import org.akwapos.app.models.product.PosProductModel
+import compose.icons.tablericons.ChevronDown
+import compose.icons.tablericons.ChevronLeft
+import compose.icons.tablericons.ChevronRight
+import compose.icons.tablericons.ChevronUp
+import compose.icons.tablericons.ClipboardList
+import compose.icons.tablericons.Filter
+import compose.icons.tablericons.Report
+import compose.icons.tablericons.Search
+import org.akwapos.app.models.pos_product.ProductResult
 import org.akwapos.app.platform.PlatformOrientation
-import org.akwapos.app.theme.*
+import org.akwapos.app.theme.HorizontalTextIcon
+import org.akwapos.app.theme.LandScapeColumnScroll
+import org.akwapos.app.theme.PixelDensity
+import org.akwapos.app.theme.VerticalTextIcon
+import org.akwapos.app.theme.createShimmer
+import org.akwapos.app.theme.drawUnderLine
+import org.akwapos.app.theme.jHorizontalScroll
+import org.akwapos.app.theme.jVerticalScroll
+import org.akwapos.app.theme.rememberPlatformOrientation
 
 object ProductsScreen : Screen {
     @Composable
@@ -61,7 +90,7 @@ object ProductsScreen : Screen {
                 ) {
                     DisplayProductFilter(screenModel)
                     DisplayProducts(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxSize()
                             .padding(vertical = PixelDensity.medium),
                         displayWidth = platformWidth
                     )
@@ -73,7 +102,7 @@ object ProductsScreen : Screen {
     @Composable
     private fun DisplayProductsMobile(modifier: Modifier) {
         val screenModel = rememberScreenModel { ProductsScreenModel() }
-        val products by screenModel.products.collectAsState()
+        val product by screenModel.product.collectAsState()
         Column(modifier) {
             Row(
                 Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainerLow)
@@ -96,11 +125,11 @@ object ProductsScreen : Screen {
                 )
             }
 
-            products?.forEach { product ->
+            product?.results?.forEach { p ->
                 DisplayProductMobile(
                     modifier = Modifier.padding(vertical = PixelDensity.verySmall)
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-                    product = product
+                    product = p!!
                 )
             } ?: Box(
                 Modifier.fillMaxWidth().height(PixelDensity.large * 3)
@@ -150,7 +179,7 @@ object ProductsScreen : Screen {
     }
 
     @Composable
-    private fun DisplayProductMobile(modifier: Modifier = Modifier, product: PosProductModel) {
+    private fun DisplayProductMobile(modifier: Modifier = Modifier, product: ProductResult) {
         Column(modifier) {
             val isExpand = remember { mutableStateOf(false) }
             Row(
@@ -182,7 +211,7 @@ object ProductsScreen : Screen {
                     text = "In Stock",
                     trailingIcon = {
                         Text(
-                            text = "${product.totalStock ?: 0}",
+                            text = "${product.stockQuantity ?: 0}",
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
@@ -233,14 +262,14 @@ object ProductsScreen : Screen {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = product.useBarcode ?: "None",
+                            text = product.sku ?: "None",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.Center
                             )
                         )
                         Text(
-                            text = product.category ?: "None",
+                            text = product.posCategory ?: "None",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.Center
@@ -254,7 +283,7 @@ object ProductsScreen : Screen {
                             )
                         )
                         Text(
-                            text = product.lowStockThreshold.toString(),
+                            text = product.stockQuantity.toString(),
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.Center
@@ -318,18 +347,19 @@ object ProductsScreen : Screen {
     }
 
     @Composable
-    private fun ColumnScope.DisplayProducts(
+    private fun DisplayProducts(
         modifier: Modifier,
         displayWidth: Int
     ) {
         val screenModel = rememberScreenModel { ProductsScreenModel() }
-        val products by screenModel.products.collectAsState()
+        val product by screenModel.product.collectAsState()
         LandScapeColumnScroll(modifier) {
-            Column(Modifier.jHorizontalScroll()) {
-                val width = remember(displayWidth) { displayWidth / 8 }
+            Column(Modifier.fillMaxSize().jHorizontalScroll()) {
+                val width = remember(displayWidth) { displayWidth / 6 }
                 Row(
                     Modifier.fillMaxWidth()
                         .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                        .drawUnderLine(MaterialTheme.colorScheme.onBackground, PixelDensity.setValue(1))
                         .padding(vertical = PixelDensity.small),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -375,123 +405,141 @@ object ProductsScreen : Screen {
                         )
                     )
                 }
-
-                products?.forEach { product ->
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            modifier = Modifier.width(PixelDensity.setValue(width)),
-                            text = product.name ?: "No name",
-                            maxLines = 1,
-                            overflow = TextOverflow.MiddleEllipsis,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Center
+                 product?.results?.forEach { p ->
+                        Row(
+                            Modifier.fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.surfaceContainerLow,
+                                    MaterialTheme.shapes.medium)
+                                .padding(vertical = PixelDensity.medium)
+                                .drawUnderLine(MaterialTheme.colorScheme.onBackground, PixelDensity.setValue(1))
+                                .padding(vertical = PixelDensity.small),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                modifier = Modifier.width(PixelDensity.setValue(width)),
+                                text = p.name ?: "No name",
+                                maxLines = 1,
+                                overflow = TextOverflow.MiddleEllipsis,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Center
+                                )
                             )
-                        )
-                        Text(
-                            modifier = Modifier.width(PixelDensity.setValue(width)),
-                            text = product.useBarcode ?: "None",
-                            maxLines = 1,
-                            overflow = TextOverflow.MiddleEllipsis,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Center
+                            Text(
+                                modifier = Modifier.width(PixelDensity.setValue(width)),
+                                text = p.sku ?: "None",
+                                maxLines = 1,
+                                overflow = TextOverflow.MiddleEllipsis,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Center
+                                )
                             )
-                        )
-                        Text(
-                            modifier = Modifier.width(PixelDensity.setValue(width)),
-                            text = product.category ?: "None",
-                            maxLines = 1,
-                            overflow = TextOverflow.MiddleEllipsis,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Center
+                            Text(
+                                modifier = Modifier.width(PixelDensity.setValue(width)),
+                                text = p.posCategory ?: "None",
+                                maxLines = 1,
+                                overflow = TextOverflow.MiddleEllipsis,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Center
+                                )
                             )
-                        )
-                        Text(
-                            modifier = Modifier.width(PixelDensity.setValue(width)),
-                            text = "$${product.basePrice ?: 0.0}",
-                            maxLines = 1,
-                            overflow = TextOverflow.MiddleEllipsis,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Center
+                            Text(
+                                modifier = Modifier.width(PixelDensity.setValue(width)),
+                                text = "$${p.posPrice ?: 0.0}",
+                                maxLines = 1,
+                                overflow = TextOverflow.MiddleEllipsis,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Center
+                                )
                             )
-                        )
-                        Text(
-                            modifier = Modifier.width(PixelDensity.setValue(width)),
-                            text = "${product.lowStockThreshold?: "0"}",
-                            maxLines = 1,
-                            overflow = TextOverflow.MiddleEllipsis,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Center
+                            Text(
+                                modifier = Modifier.width(PixelDensity.setValue(width)),
+                                text = "${p.stockQuantity ?: "0"}",
+                                maxLines = 1,
+                                overflow = TextOverflow.MiddleEllipsis,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Center
+                                )
                             )
+                        }
+                        HorizontalDivider()
+                    } ?: repeat(5) {
+                        Box(
+                            Modifier.fillMaxWidth().height(PixelDensity.large * 2)
+                                .createShimmer(
+                                    listOf(
+                                        Color.LightGray,
+                                        Color.White,
+                                        Color.LightGray
+                                    )
+                                )
                         )
-                    }
-                    HorizontalDivider()
                 }
-            }
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = PixelDensity.large * 2),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Showing 5 of 5 products")
-                Row(horizontalArrangement = Arrangement.spacedBy(PixelDensity.small)) {
-                    Box(
-                        modifier = Modifier
-                            .border(
-                                PixelDensity.setValue(1),
-                                MaterialTheme.colorScheme.onBackground,
-                                RoundedCornerShape(10)
-                            )
-                            .clickable {}
-                            .padding(PixelDensity.medium),
-                        contentAlignment = Alignment.CenterStart // Align content to the left
-                    ) {
-                        Text(
-                            "Previous",
-                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                        )
-                    }
-                    Text(
-                        text = "1",
-                        modifier = Modifier
-                            .border(
-                                PixelDensity.setValue(1),
-                                MaterialTheme.colorScheme.onBackground,
-                                RoundedCornerShape(10)
-                            )
-                            .background(MaterialTheme.colorScheme.secondary, RoundedCornerShape(10))
-                            .padding(PixelDensity.medium),
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSecondary,
-                        )
-                    )
-                    Box(
-                        modifier = Modifier
-                            .border(
-                                PixelDensity.setValue(1),
-                                MaterialTheme.colorScheme.onBackground,
-                                RoundedCornerShape(10)
-                            )
-                            .clickable {}
-                            .padding(PixelDensity.medium),
-                        contentAlignment = Alignment.CenterStart // Align content to the left
-                    ) {
-                        Text(
-                            "Next",
-                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                        )
-                    }
-                }
+//                Row(
+//                    Modifier
+//                        .fillMaxWidth()
+//                        .padding(top = PixelDensity.large * 2),
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    Text("Showing 1 of ${products?.size ?: 0} products")
+//                    Row(horizontalArrangement = Arrangement.spacedBy(PixelDensity.small)) {
+//                        Box(
+//                            modifier = Modifier
+//                                .border(
+//                                    PixelDensity.setValue(1),
+//                                    MaterialTheme.colorScheme.onBackground,
+//                                    RoundedCornerShape(10)
+//                                )
+//                                .clickable {}
+//                                .padding(PixelDensity.medium),
+//                            contentAlignment = Alignment.CenterStart // Align content to the left
+//                        ) {
+//                            Text(
+//                                "Previous",
+//                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+//                            )
+//                        }
+//                        Text(
+//                            text = "1",
+//                            modifier = Modifier
+//                                .border(
+//                                    PixelDensity.setValue(1),
+//                                    MaterialTheme.colorScheme.onBackground,
+//                                    RoundedCornerShape(10)
+//                                )
+//                                .background(
+//                                    MaterialTheme.colorScheme.secondary,
+//                                    RoundedCornerShape(10)
+//                                )
+//                                .padding(PixelDensity.medium),
+//                            style = MaterialTheme.typography.bodyMedium.copy(
+//                                fontWeight = FontWeight.SemiBold,
+//                                color = MaterialTheme.colorScheme.onSecondary,
+//                            )
+//                        )
+//                        Box(
+//                            modifier = Modifier
+//                                .border(
+//                                    PixelDensity.setValue(1),
+//                                    MaterialTheme.colorScheme.onBackground,
+//                                    RoundedCornerShape(10)
+//                                )
+//                                .clickable {}
+//                                .padding(PixelDensity.medium),
+//                            contentAlignment = Alignment.CenterStart // Align content to the left
+//                        ) {
+//                            Text(
+//                                "Next",
+//                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+//                            )
+//                        }
+//                    }
+//                }
             }
         }
     }

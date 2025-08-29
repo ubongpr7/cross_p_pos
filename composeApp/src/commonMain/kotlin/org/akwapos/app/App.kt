@@ -2,12 +2,15 @@ package org.akwapos.app
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import cafe.adriel.voyager.navigator.Navigator
 import org.akwapos.app.core.LocalDatabaseManager
 import org.akwapos.app.screens.auth.AuthenticationScreen
 import org.akwapos.app.screens.home.HomeScreen
+import org.akwapos.app.screens.home.SplashScreen
 import org.akwapos.app.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -15,17 +18,16 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 @Composable
 internal fun App() = AppTheme {
-    val isVerified = rememberSaveable { mutableStateOf(false) }
+    var isVerified by rememberSaveable { mutableStateOf<Boolean?>(null) }
     LaunchedEffect(null) {
         LocalDatabaseManager.initializeDatabase()
         val db = LocalDatabaseManager.getAuthStore()
-        println(db)
-        isVerified.value = (db != null && db.isVerified && db.json.trim().isNotEmpty())
+        isVerified = (db != null && db.isVerified && db.json.trim().isNotEmpty())
     }
-    if (isVerified.value) {
-        Navigator(HomeScreen)
-    } else {
-        Navigator(AuthenticationScreen)
+    when (isVerified) {
+        true -> Navigator(HomeScreen)
+        false -> Navigator(AuthenticationScreen)
+        else -> Navigator(SplashScreen)
     }
 //    HomeScreen(Modifier.fillMaxSize())
 }
